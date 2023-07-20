@@ -101,7 +101,7 @@ collectionRouter.get('/:id', async (req, res) => {
 
 collectionRouter.post('/', verifyToken, async (req, res) => {
     try {
-        const { name_en, name_uz, description_en, description_uz, extraFields, photo, topicId } = req.body;
+        const { name_en, name_uz, description_en, description_uz, extraFields, photo, idTopic } = req.body;
         const authorId = req.user.userId; // Extract the authorId from req.user
         const createdAt = new Date();
         const updatedAt = new Date();
@@ -118,7 +118,7 @@ collectionRouter.post('/', verifyToken, async (req, res) => {
             authorId,
             createdAt,
             updatedAt,
-            topicId
+            idTopic
         });
         res.status(201).json(collection);
     } catch (error) {
@@ -129,7 +129,7 @@ collectionRouter.post('/', verifyToken, async (req, res) => {
 
 collectionRouter.put('/:id', verifyToken, async (req, res) => {
     try {
-        const { name_en, name_uz, description_en, description_uz, extraFields, photo, topicId } = req.body;
+        const { name_en, name_uz, description_en, description_uz, extraFields, photo, idTopic } = req.body;
         const collection = await Collection.findByPk(req.params.id);
         const authorId = req.user.userId;
         if (collection) {
@@ -140,7 +140,7 @@ collectionRouter.put('/:id', verifyToken, async (req, res) => {
             collection.extraFields = extraFields;
             collection.photo = photo;
             collection.authorId = authorId;
-            collection.topicId = topicId;
+            collection.idTopic = idTopic;
             await collection.save();
             res.json(collection);
         } else {
