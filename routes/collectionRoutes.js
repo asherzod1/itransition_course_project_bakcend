@@ -9,12 +9,19 @@ collectionRouter = express.Router();
 
 collectionRouter.get('/', verifyToken, async (req, res) => {
     try {
-        const collections = await Collection.findAll({
+        const user = await User.findByPk(req.user.userId);
+        const isAdmin = user.is_admin;
+        let collections = await Collection.findAll({
             where: {
                 authorId: req.user.userId,
             },
-            include: [{ model: User, as: 'author' }],
+            include: [{model: User, as: 'author'}],
         });
+        if (isAdmin) {
+            collections = await Collection.findAll({
+                include: [{model: User, as: 'author'}],
+            });
+        }
         const collectionsWithTranslatedName = collections.map(collection => {
             const attributeName = `name_${req.language}`;
             console.log("attributeName", attributeName)
@@ -25,8 +32,8 @@ collectionRouter.get('/', verifyToken, async (req, res) => {
             topic.name = topic[`name_${req.language}`];
             return {
                 ...collection.toJSON(),
-                name:translatedName,
-                description:translatedDescription,
+                name: translatedName,
+                description: translatedDescription,
                 topic
             };
         });
@@ -34,14 +41,14 @@ collectionRouter.get('/', verifyToken, async (req, res) => {
         res.json(collectionsWithTranslatedName);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({message: 'Internal server error'});
     }
 });
 
 collectionRouter.get('/home', async (req, res) => {
     try {
         const collections = await Collection.findAll({
-            include: [{ model: User, as: 'author' }],
+            include: [{model: User, as: 'author'}],
         });
 
         const collectionsWithTranslatedName = collections?.map(collection => {
@@ -54,25 +61,25 @@ collectionRouter.get('/home', async (req, res) => {
             topic.name = topic[`name_${req.language}`];
             return {
                 ...collection.toJSON(),
-                name:translatedName,
-                description:translatedDescription,
+                name: translatedName,
+                description: translatedDescription,
                 topic
             };
         });
 
         console.log("collectionsWithTranslatedName", collectionsWithTranslatedName)
 
-        res.json(collectionsWithTranslatedName.splice(0,5));
+        res.json(collectionsWithTranslatedName.splice(0, 5));
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({message: 'Internal server error'});
     }
 });
 
 collectionRouter.get('/:id', async (req, res) => {
     try {
         const collection = await Collection.findByPk(req.params.id, {
-            include: [{ model: User, as: 'author' }],
+            include: [{model: User, as: 'author'}],
         });
 
         if (collection) {
@@ -84,24 +91,24 @@ collectionRouter.get('/:id', async (req, res) => {
             topic.name = topic[`name_${req.language}`];
             let translatedcollection = {
                 ...collection.toJSON(),
-                name:translatedName,
+                name: translatedName,
                 description: attributeDescription,
                 topic
             };
             res.json(translatedcollection);
         } else {
-            res.status(404).json({ message: 'Collection not found' });
+            res.status(404).json({message: 'Collection not found'});
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({message: 'Internal server error'});
     }
 });
 
 
 collectionRouter.post('/', verifyToken, async (req, res) => {
     try {
-        const { name_en, name_uz, description_en, description_uz, extraFields, photo, idTopic } = req.body;
+        const {name_en, name_uz, description_en, description_uz, extraFields, photo, idTopic} = req.body;
         const authorId = req.user.userId; // Extract the authorId from req.user
         const createdAt = new Date();
         const updatedAt = new Date();
@@ -123,13 +130,13 @@ collectionRouter.post('/', verifyToken, async (req, res) => {
         res.status(201).json(collection);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({message: 'Internal server error'});
     }
 });
 
 collectionRouter.put('/:id', verifyToken, async (req, res) => {
     try {
-        const { name_en, name_uz, description_en, description_uz, extraFields, photo, idTopic } = req.body;
+        const {name_en, name_uz, description_en, description_uz, extraFields, photo, idTopic} = req.body;
         const collection = await Collection.findByPk(req.params.id);
         const authorId = req.user.userId;
         if (collection) {
@@ -144,11 +151,11 @@ collectionRouter.put('/:id', verifyToken, async (req, res) => {
             await collection.save();
             res.json(collection);
         } else {
-            res.status(404).json({ message: 'Collection not found' });
+            res.status(404).json({message: 'Collection not found'});
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({message: 'Internal server error'});
     }
 });
 
@@ -157,13 +164,13 @@ collectionRouter.delete('/:id', verifyToken, async (req, res) => {
         const collection = await Collection.findByPk(req.params.id);
         if (collection) {
             await collection.destroy();
-            res.json({ message: 'Collection deleted successfully' });
+            res.json({message: 'Collection deleted successfully'});
         } else {
-            res.status(404).json({ message: 'Collection not found' });
+            res.status(404).json({message: 'Collection not found'});
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({message: 'Internal server error'});
     }
 });
 

@@ -38,6 +38,10 @@ authRouter.post('/login', async (req, res) => {
         if (!user) {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
+        if(user.status !== 'active'){
+            return res.status(401).json({ error: 'User blocked' });
+        }
+
         const isPasswordValid = await user.comparePassword(password);
         if (!isPasswordValid) {
             return res.status(401).json({ error: 'Invalid email or password' });

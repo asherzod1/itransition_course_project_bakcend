@@ -30,7 +30,7 @@ router.post("/users/status", verifyToken, async (req, res) => {
         if (!user) {
             return res.status(404).json({message: 'User not found'});
         }
-        user.status = status;
+        user.status = status ? 'active' : 'blocked'
         await user.save();
         res.json(user);
     } catch (error) {
@@ -256,13 +256,13 @@ router.delete('/likes/:id', async (req, res) => {
     }
 });
 
-router.get('/users/:id', async (req, res) => {
+router.get('/users/:id', verifyToken, async (req, res) => {
     try {
         const {id} = req.params;
 
         const user = await User.findByPk(id)
         if (!user) {
-            return res.status(404).json({error: "User not found"})
+            return res.status(401).json({error: "User not found"})
         }
         const userWithoutPassword = { ...user.toJSON() };
         delete userWithoutPassword.password;
@@ -312,6 +312,7 @@ router.get('/search', async (req, res) => {
 router.post('/users', async (req, res) => {
     try {
         const { name, email, password, status, is_admin } = req.body;
+        console.log("req.body: ", req.body)
         const newUser = await User.create({
             name,
             email,
@@ -319,8 +320,10 @@ router.post('/users', async (req, res) => {
             status: status || 'active',
             is_admin: is_admin || false,
         });
+        const userWithoutPassword = { ...newUser.toJSON() };
+        delete userWithoutPassword.password;
 
-        res.status(201).json(newUser);
+        res.status(201).json(userWithoutPassword);
     } catch (error) {
         console.error('Error creating user:', error);
         res.status(500).json({ message: 'Internal Server Error' });
