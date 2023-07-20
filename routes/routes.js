@@ -288,8 +288,6 @@ router.get('/search', async (req, res) => {
         const searchResults = await Promise.all(
             modelsToSearch.map(async (model) => {
                 const attributes = Object.keys(model.rawAttributes);
-
-                // Construct the WHERE clause for each model field
                 const where = {
                     [Op.or]: attributes.map((attribute) => ({
                         [attribute]: {
@@ -297,13 +295,9 @@ router.get('/search', async (req, res) => {
                         },
                     })),
                 };
-
-                // Perform the search using the WHERE clause on each model
                 const results = await model.findAll({
                     where,
                 });
-
-                // Return the results along with the model name
                 return { modelName: model.name, results };
             })
         );
@@ -311,6 +305,24 @@ router.get('/search', async (req, res) => {
         res.json(searchResults);
     } catch (error) {
         console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
+router.post('/users', async (req, res) => {
+    try {
+        const { name, email, password, status, is_admin } = req.body;
+        const newUser = await User.create({
+            name,
+            email,
+            password,
+            status: status || 'active',
+            is_admin: is_admin || false,
+        });
+
+        res.status(201).json(newUser);
+    } catch (error) {
+        console.error('Error creating user:', error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
