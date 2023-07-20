@@ -31,11 +31,11 @@ const io = new Server(server, {
 app.use(bodyParser.json());
 // Configure CORS
 const corsOptions = {
-    origin: corsOrigin,
+    origin: '*',
     optionsSuccessStatus: 200,
 };
 
-app.use(cors());
+app.use(cors(corsOptions));
 
 app.use(languageMiddleware)
 
