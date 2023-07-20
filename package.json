@@ -1,9 +1,10 @@
 {
-  "name": "email_backend",
+  "name": "course_project_backend",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
   "scripts": {
+    "prestart": "npx sequelize-cli db:migrate --env production",
     "start": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
