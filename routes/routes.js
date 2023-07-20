@@ -267,7 +267,7 @@ router.get('/users/:id', async (req, res) => {
     }
 })
 
-const modelsToSearch = [Collection, CollectionItem, Tag, Topic, CollectionExtraField, TagItem, Like, Comment];
+const modelsToSearch = [Collection, CollectionItem, Tag, Topic, Comment];
 
 // Create the search endpoint
 router.get('/search', async (req, res) => {

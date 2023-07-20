@@ -23,10 +23,11 @@ const corsOrigin = [
 ]
 const io = new Server(server, {
     cors: {
-        origin: corsOrigin,
+        origin: '*',
         methods: ["GET", "POST"]
     }
 })
+app.set('io', io)
 // Middleware
 app.use(bodyParser.json());
 // Configure CORS
@@ -84,9 +85,10 @@ io.on('connection', (socket) => {
 // End web socket for comments
 
 
-app.listen(8000, () => {
+server.listen(8000, () => {
     console.log('Server is running on port 8000');
 });
-server.listen(8001, () => {
-    console.log('Server is running on port 8000');
-})
+
+// server.listen(8001, () => {
+//     console.log('Server is running on port 8001');
+// })
