@@ -107,7 +107,7 @@ collectionRouter.post('/', verifyToken, async (req, res) => {
         const updatedAt = new Date();
         const photoFilePath = req.file ? req.file.path : null;
         const photoFilename = photoFilePath ? `${uuidv4()}${path.extname(photoFilePath)}` : null;
-
+        console.log("AuthorID: ", authorId)
         const collection = await Collection.create({
             name_en,
             name_uz,

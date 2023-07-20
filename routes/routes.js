@@ -264,15 +264,10 @@ router.get('/users/:id', async (req, res) => {
         if (!user) {
             return res.status(404).json({error: "User not found"})
         }
-
-        const messages = await Message.findAll({
-            where: {recipientId: id},
-            include: [{model: User, as: 'author'}],
-        });
-
+        const userWithoutPassword = { ...user.toJSON() };
+        delete userWithoutPassword.password;
         res.json({
-            user: user,
-            messages: messages
+            user: userWithoutPassword
         })
     } catch (error) {
         console.error('Error updating user status:', error);
