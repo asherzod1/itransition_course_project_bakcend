@@ -21,7 +21,7 @@ collectionRouter.get('/', verifyToken, async (req, res) => {
             const translatedName = collection.get(attributeName); // Access the translated name using get() method
             const attributeDescription = `description_${req.language}`;
             const translatedDescription = collection.get(attributeDescription);
-            const topic = [...Topics].find(topic => topic.id === collection?.topicId ? collection.topicId : 1);
+            const topic = [...Topics].find(topic => topic.id === collection?.topicId);
             topic.name = topic[`name_${req.language}`];
             return {
                 ...collection.toJSON(),
