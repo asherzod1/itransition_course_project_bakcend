@@ -114,14 +114,14 @@ module.exports = {
           key: 'id',
         },
       },
-      // TopicId: {
-      //   type: Sequelize.INTEGER,
-      //   allowNull: true,
-      //   references: {
-      //     model: 'Topics',
-      //     key: 'id',
-      //   },
-      // },
+      TopicId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'Topics',
+          key: 'id',
+        },
+      },
     });
 
     await queryInterface.createTable('CollectionItems', {

@@ -327,10 +327,10 @@ TagItem.belongsTo(Tag, {
 });
 
 
-Topic.belongsTo(Collection, {
-    foreignKey: 'CollectionId',
-    as: 'topic'
-});
+// Topic.belongsTo(Collection, {
+//     foreignKey: 'CollectionId',
+//     as: 'topic'
+// });
 
 CollectionExtraField.belongsTo(CollectionItem, {
     foreignKey: 'CollectionItemId',
