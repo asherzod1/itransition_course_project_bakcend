@@ -76,6 +76,11 @@ const Collection = sequelize.define('Collection', {
         type: DataTypes.STRING, // Change the data type to STRING
         allowNull: true,
     },
+    topicId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 1
+    },
     createdAt: {
         type: DataTypes.DATE,
         allowNull: false,

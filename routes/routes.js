@@ -3,6 +3,7 @@ const sequelize = require('../sequelize');
 const { Op } = require('sequelize');
 const {User, Collection, CollectionItem, Tag, Topic, CollectionExtraField, TagItem, Like, Comment} = require('../models/model');
 const verifyToken = require("../middlewares/tokenMiddleware");
+const {Topics} = require("../models/constants");
 
 router = express.Router();
 
@@ -73,6 +74,18 @@ router.delete("/users/:id", verifyToken, async (req, res) => {
     }
 });
 
+router.get('/topics', async (req, res) => {
+    try {
+        const topics = [...Topics];
+        topics.forEach(topic=>{
+            topic.name = topic[`name_${req.language}`]
+        })
+        res.json(topics);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
 
 router.get('/tags', async (req, res) => {
     try {

@@ -2,6 +2,7 @@ const express = require("express");
 const sequelize = require('../sequelize');
 const {Collection, User} = require('../models/model');
 const verifyToken = require("../middlewares/tokenMiddleware");
+const {Topics} = require("../models/constants");
 
 
 collectionRouter = express.Router();
@@ -20,10 +21,13 @@ collectionRouter.get('/', verifyToken, async (req, res) => {
             const translatedName = collection.get(attributeName); // Access the translated name using get() method
             const attributeDescription = `description_${req.language}`;
             const translatedDescription = collection.get(attributeDescription);
+            const topic = [...Topics].find(topic => topic.id === collection.topicId);
+            topic.name = topic[`name_${req.language}`];
             return {
                 ...collection.toJSON(),
                 name:translatedName,
-                description:translatedDescription
+                description:translatedDescription,
+                topic
             };
         });
 
@@ -46,10 +50,13 @@ collectionRouter.get('/home', async (req, res) => {
             const translatedName = collection.get(attributeName); // Access the translated name using get() method
             const attributeDescription = `description_${req.language}`;
             const translatedDescription = collection.get(attributeDescription);
+            const topic = [...Topics].find(topic => topic.id === collection.topicId);
+            topic.name = topic[`name_${req.language}`];
             return {
                 ...collection.toJSON(),
                 name:translatedName,
-                description:translatedDescription
+                description:translatedDescription,
+                topic
             };
         });
 
@@ -73,10 +80,13 @@ collectionRouter.get('/:id', async (req, res) => {
             const attributeDescription = `description_${req.language}`;
             const translatedName = collection.get(attributeName); // Access the translated name using get() method
             const translatedDescription = collection.get(attributeDescription); // Access the translated name using get() method
+            const topic = [...Topics].find(topic => topic.id === collection.topicId);
+            topic.name = topic[`name_${req.language}`];
             let translatedcollection = {
                 ...collection.toJSON(),
                 name:translatedName,
-                description: attributeDescription
+                description: attributeDescription,
+                topic
             };
             res.json(translatedcollection);
         } else {
@@ -91,7 +101,7 @@ collectionRouter.get('/:id', async (req, res) => {
 
 collectionRouter.post('/', verifyToken, async (req, res) => {
     try {
-        const { name_en, name_uz, description_en, description_uz, extraFields, photo } = req.body;
+        const { name_en, name_uz, description_en, description_uz, extraFields, photo, topicId } = req.body;
         const authorId = req.user.userId; // Extract the authorId from req.user
         const createdAt = new Date();
         const updatedAt = new Date();
@@ -108,6 +118,7 @@ collectionRouter.post('/', verifyToken, async (req, res) => {
             authorId,
             createdAt,
             updatedAt,
+            topicId
         });
         res.status(201).json(collection);
     } catch (error) {
@@ -118,7 +129,7 @@ collectionRouter.post('/', verifyToken, async (req, res) => {
 
 collectionRouter.put('/:id', verifyToken, async (req, res) => {
     try {
-        const { name_en, name_uz, description_en, description_uz, extraFields, photo } = req.body;
+        const { name_en, name_uz, description_en, description_uz, extraFields, photo, topicId } = req.body;
         const collection = await Collection.findByPk(req.params.id);
         const authorId = req.user.userId;
         if (collection) {
@@ -129,6 +140,7 @@ collectionRouter.put('/:id', verifyToken, async (req, res) => {
             collection.extraFields = extraFields;
             collection.photo = photo;
             collection.authorId = authorId;
+            collection.topicId = topicId;
             await collection.save();
             res.json(collection);
         } else {
@@ -154,5 +166,6 @@ collectionRouter.delete('/:id', verifyToken, async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 });
+
 
 module.exports = collectionRouter;
