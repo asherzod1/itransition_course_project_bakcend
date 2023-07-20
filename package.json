@@ -4,9 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "migrationCancel": "npx sequelize-cli db:migrate:undo",
-    "migration": "npx sequelize-cli db:migrate --env production",
-    "prestart": "npm-run-all migrationCancel migration",
+    "prestart": "npx sequelize-cli db:migrate --env production",
     "start": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
