@@ -21,7 +21,7 @@ collectionRouter.get('/', verifyToken, async (req, res) => {
             const translatedName = collection.get(attributeName); // Access the translated name using get() method
             const attributeDescription = `description_${req.language}`;
             const translatedDescription = collection.get(attributeDescription);
-            const topic = [...Topics].find(topic => topic.id === collection.topicId);
+            const topic = [...Topics].find(topic => topic.id === collection?.topicId ? collection.topicId : 1);
             topic.name = topic[`name_${req.language}`];
             return {
                 ...collection.toJSON(),
@@ -44,13 +44,13 @@ collectionRouter.get('/home', async (req, res) => {
             include: [{ model: User, as: 'author' }],
         });
 
-        const collectionsWithTranslatedName = collections.map(collection => {
+        const collectionsWithTranslatedName = collections?.map(collection => {
             const attributeName = `name_${req.language}`;
             console.log("attributeName", attributeName)
             const translatedName = collection.get(attributeName); // Access the translated name using get() method
             const attributeDescription = `description_${req.language}`;
             const translatedDescription = collection.get(attributeDescription);
-            const topic = [...Topics].find(topic => topic.id === collection.topicId);
+            const topic = [...Topics].find(topic => topic.id === collection?.topicId ? collection.topicId : 1);
             topic.name = topic[`name_${req.language}`];
             return {
                 ...collection.toJSON(),
