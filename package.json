@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "migrationCancel": "npx sequelize-cli db:migrate:undo:all --env production",
+    "migrationCancel": "npx sequelize-cli db:migrate:undo",
     "migration": "npx sequelize-cli db:migrate --env production",
     "prestart": "npm-run-all migrationCancel migration",
     "start": "nodemon app.js",
