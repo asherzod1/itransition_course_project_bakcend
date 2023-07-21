@@ -1,6 +1,6 @@
 const express = require("express");
 const sequelize = require('../sequelize');
-const {Collection, User} = require('../models/model');
+const {Collection, User, CollectionItem} = require('../models/model');
 const verifyToken = require("../middlewares/tokenMiddleware");
 const {Topics} = require("../models/constants");
 
@@ -45,12 +45,39 @@ collectionRouter.get('/', verifyToken, async (req, res) => {
     }
 });
 
+
+Collection.hasMany(CollectionItem, { foreignKey: 'CollectionId', as: 'collectionItems' });
 collectionRouter.get('/home', async (req, res) => {
     try {
-        const collections = await Collection.findAll({
-            include: [{model: User, as: 'author'}],
+        // const collections = await Collection.findAll({
+        //     include: [{model: User, as: 'author'}],
+        // });
+        let collections = await Collection.findAll({
+            attributes: [
+                'id',
+                'name_en',
+                'name_uz',
+                'description_en',
+                'description_uz',
+                'extraFields',
+                'photo',
+                'idTopic',
+                [sequelize.fn('COUNT', sequelize.col('collectionItems.id')), 'collectionItemsCount'],
+            ],
+            include: [
+                { model: User, as: 'author' },
+                {
+                    model: CollectionItem,
+                    as: 'collectionItems',
+                    attributes: [], // Exclude other attributes of CollectionItem from the main query
+                },
+            ],
+            group: ['Collection.id'], // Group by Collection.id to get the count of CollectionItems per Collection
         });
-
+        collections = collections.sort((a, b) => b.collectionItemsCount - a.collectionItemsCount);
+        if(collections.length > 5) {
+            collections = collections.splice(0, 5);
+        }
         const collectionsWithTranslatedName = collections?.map(collection => {
             const attributeName = `name_${req.language}`;
             console.log("attributeName", attributeName)
@@ -69,7 +96,7 @@ collectionRouter.get('/home', async (req, res) => {
 
         console.log("collectionsWithTranslatedName", collectionsWithTranslatedName)
 
-        res.json(collectionsWithTranslatedName.splice(0, 5));
+        res.json(collectionsWithTranslatedName);
     } catch (error) {
         console.error(error);
         res.status(500).json({message: 'Internal server error'});
