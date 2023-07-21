@@ -74,7 +74,7 @@ collectionRouter.get('/home', async (req, res) => {
             ],
             group: ['Collection.id'], // Group by Collection.id to get the count of CollectionItems per Collection
         });
-        collections = collections.sort((a, b) => b.collectionItemsCount - a.collectionItemsCount);
+        collections = collections.sort((a, b) => b.get('collectionItemsCount') - a.get('collectionItemsCount'));
         if(collections.length > 5) {
             collections = collections.splice(0, 5);
         }
